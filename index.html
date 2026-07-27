@@ -35,13 +35,8 @@
         .form-group { margin-bottom: 12px; }
         .form-group label { display: block; font-size: 12px; font-weight: 500; color: var(--text-secondary); margin-bottom: 5px; }
         .required { color: var(--danger); }
-        .form-group input, .form-group select, .form-group textarea {
-            width: 100%; padding: 9px 11px; border: 1.5px solid var(--border); border-radius: 8px;
-            font-size: 13px; color: var(--text); background: #fafbfc; -webkit-appearance: none;
-        }
-        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
-            outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(26,115,232,0.12); background: white;
-        }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 9px 11px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 13px; color: var(--text); background: #fafbfc; -webkit-appearance: none; }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(26,115,232,0.12); background: white; }
         .form-group textarea { min-height: 70px; resize: vertical; }
         .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 10px 16px; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.3s; width: 100%; }
@@ -149,24 +144,12 @@
 </div>
 
 <div class="tab-nav">
-    <button class="tab-btn active" onclick="switchTab('create',this)">
-        <span class="tab-icon">✏️</span>新建
-    </button>
-    <button class="tab-btn" onclick="switchTab('inbox',this)">
-        <span class="tab-icon">📥</span>待确认<span id="inboxBadge"></span>
-    </button>
-    <button class="tab-btn" onclick="switchTab('tasks',this)">
-        <span class="tab-icon">📋</span>任务
-    </button>
-    <button class="tab-btn" onclick="switchTab('handover',this)">
-        <span class="tab-icon">🤝</span>交接
-    </button>
-    <button class="tab-btn" onclick="switchTab('stats',this)">
-        <span class="tab-icon">📊</span>统计
-    </button>
-    <button class="tab-btn" onclick="switchTab('admin',this)">
-        <span class="tab-icon">⚙️</span>管理
-    </button>
+    <button class="tab-btn active" onclick="switchTab('create',this)"><span class="tab-icon">✏️</span>新建</button>
+    <button class="tab-btn" onclick="switchTab('inbox',this)"><span class="tab-icon">📥</span>待确认<span id="inboxBadge"></span></button>
+    <button class="tab-btn" onclick="switchTab('tasks',this)"><span class="tab-icon">📋</span>任务</button>
+    <button class="tab-btn" onclick="switchTab('handover',this)"><span class="tab-icon">🤝</span>交接</button>
+    <button class="tab-btn" onclick="switchTab('stats',this)"><span class="tab-icon">📊</span>统计</button>
+    <button class="tab-btn" onclick="switchTab('admin',this)"><span class="tab-icon">⚙️</span>管理</button>
 </div>
 
 <!-- Create Tab -->
@@ -176,12 +159,8 @@
         <div class="form-group">
             <label>当前班次 <span class="required">*</span></label>
             <div class="shift-selector">
-                <div class="shift-option selected" onclick="selectShift(this,'D')">
-                    <span class="shift-icon">☀️</span>D班
-                </div>
-                <div class="shift-option" onclick="selectShift(this,'N')">
-                    <span class="shift-icon">🌙</span>N班
-                </div>
+                <div class="shift-option selected" onclick="selectShift(this,'D')"><span class="shift-icon">☀️</span>D班</div>
+                <div class="shift-option" onclick="selectShift(this,'N')"><span class="shift-icon">🌙</span>N班</div>
             </div>
         </div>
         <div class="form-row">
@@ -207,9 +186,7 @@
     <div class="info-box">📌 选择你的姓名，查看分配给你的任务。未完成的任务可以转交给下一位班长。</div>
     <div class="form-group">
         <label>选择我的姓名</label>
-        <select id="myName" onchange="onMyNameChange()">
-            <option value="">请选择</option>
-        </select>
+        <select id="myName" onchange="onMyNameChange()"><option value="">请选择</option></select>
     </div>
     <div id="inboxList"></div>
 </div>
@@ -255,11 +232,11 @@
     <div class="export-section">
         <button class="export-btn" onclick="exportCSV()">📊 导出CSV</button>
         <button class="export-btn" onclick="exportJSON()">📥 导出JSON</button>
-   </div>
-        <div class="export-section">
-    <button class="export-btn" style="color:var(--danger);border-color:var(--danger);font-weight:700;" onclick="clearTasksOnly()">
-        🗑️ 清空任务数据（保留班长名单）
-    </button>
+    </div>
+    <div class="export-section">
+        <button class="export-btn" style="color:var(--danger);border-color:var(--danger);font-weight:700;" onclick="clearTasksOnly()">
+            🗑️ 清空任务数据（保留班长名单）
+        </button>
     </div>
 </div>
 
@@ -301,12 +278,10 @@
 
 <div id="toast" class="toast"></div>
 
-<!-- Firebase SDK -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
 import { getFirestore, collection, doc, addDoc, updateDoc, deleteDoc, onSnapshot, query, orderBy, serverTimestamp, getDocs } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
 
-// ===== Firebase Config =====
 const firebaseConfig = {
     apiKey: "AIzaSyC7_FRwaf_U-3euP5RlzWjuuOucNr1vGMI",
     authDomain: "shift-app-b30d6.firebaseapp.com",
@@ -319,16 +294,13 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// ===== Global State =====
 window.currentShift = 'D';
 window.currentFilter = 'all';
 window.taskBlockCount = 0;
 window.allTasks = [];
 window.allLeaders = [];
 window.allHandovers = [];
-window.myNameSelected = '';
 
-// ===== Clock =====
 function updateClock(){
     var n=new Date();
     var el=document.getElementById('currentTime');
@@ -337,17 +309,16 @@ function updateClock(){
 }
 updateClock(); setInterval(updateClock,1000);
 
-// ===== Helpers =====
 window.genId = function(){ return 'T'+Date.now().toString(36).toUpperCase()+Math.random().toString(36).substr(2,4).toUpperCase(); }
 window.fmtTime = function(ts){
     if(!ts) return '';
-    var d = ts.toDate ? ts.toDate() : new Date(ts);
+    var d=ts.toDate?ts.toDate():new Date(ts);
     return (d.getMonth()+1).toString().padStart(2,'0')+'-'+d.getDate().toString().padStart(2,'0')+' '+
         d.getHours().toString().padStart(2,'0')+':'+d.getMinutes().toString().padStart(2,'0');
 }
 window.fmtFull = function(ts){
     if(!ts) return '';
-    var d = ts.toDate ? ts.toDate() : new Date(ts);
+    var d=ts.toDate?ts.toDate():new Date(ts);
     return d.getFullYear()+'-'+(d.getMonth()+1).toString().padStart(2,'0')+'-'+d.getDate().toString().padStart(2,'0')+' '+
         d.getHours().toString().padStart(2,'0')+':'+d.getMinutes().toString().padStart(2,'0')+':'+d.getSeconds().toString().padStart(2,'0');
 }
@@ -360,11 +331,9 @@ window.showToast = function(msg){
 }
 window.closeModal = function(){ document.getElementById('taskModal').classList.remove('show'); }
 
-// ===== Real-time Listeners =====
-// Leaders
 onSnapshot(query(collection(db,'leaders'),orderBy('createdAt','asc')), function(snapshot){
-    window.allLeaders = [];
-    snapshot.forEach(function(doc){ window.allLeaders.push({firestoreId: doc.id, ...doc.data()}); });
+    window.allLeaders=[];
+    snapshot.forEach(function(d){ window.allLeaders.push({firestoreId:d.id,...d.data()}); });
     refreshLeaderSelects();
     renderLeaderList();
     document.getElementById('syncStatus').innerHTML='<span class="sync-online">🟢 已同步</span>';
@@ -372,101 +341,93 @@ onSnapshot(query(collection(db,'leaders'),orderBy('createdAt','asc')), function(
     document.getElementById('syncStatus').innerHTML='<span class="sync-offline">🔴 连接失败</span>';
 });
 
-// Tasks
 onSnapshot(query(collection(db,'tasks'),orderBy('createdAt','desc')), function(snapshot){
-    window.allTasks = [];
-    snapshot.forEach(function(doc){ window.allTasks.push({firestoreId: doc.id, ...doc.data()}); });
+    window.allTasks=[];
+    snapshot.forEach(function(d){ window.allTasks.push({firestoreId:d.id,...d.data()}); });
     renderTasks();
     renderStats();
     updateInboxBadge();
-    var myName = document.getElementById('myName').value;
+    var myName=document.getElementById('myName').value;
     if(myName) renderInbox();
 });
 
-// Handovers
 onSnapshot(query(collection(db,'handovers'),orderBy('createdAt','desc')), function(snapshot){
-    window.allHandovers = [];
-    snapshot.forEach(function(doc){ window.allHandovers.push({firestoreId: doc.id, ...doc.data()}); });
+    window.allHandovers=[];
+    snapshot.forEach(function(d){ window.allHandovers.push({firestoreId:d.id,...d.data()}); });
     renderHandoverList();
     renderStats();
 });
 
-// ===== Tab Switch =====
-window.switchTab = function(name, btn){
+window.switchTab = function(name,btn){
     document.querySelectorAll('.tab-content').forEach(function(t){t.classList.remove('active');});
     document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('active');});
     document.getElementById('tab-'+name).classList.add('active');
     btn.classList.add('active');
 }
 
-// ===== Shift =====
-window.selectShift = function(el, shift){
+window.selectShift = function(el,shift){
     document.querySelectorAll('.shift-option').forEach(function(s){s.classList.remove('selected');});
     el.classList.add('selected');
-    window.currentShift = shift;
+    window.currentShift=shift;
     refreshLeaderSelects();
 }
 
-// ===== Leader Selects =====
 function refreshLeaderSelects(){
-    var filtered = window.allLeaders.filter(function(l){ return l.shift===window.currentShift || l.shift==='both'; });
-    var opts = '<option value="">请选择</option>';
-    filtered.forEach(function(l){ opts += '<option value="'+window.esc(l.name)+'">'+window.esc(l.name)+'</option>'; });
-    var fromSel = document.getElementById('fromLeader');
-    var toSel = document.getElementById('toLeader');
-    if(fromSel){ var fv=fromSel.value; fromSel.innerHTML=opts; fromSel.value=fv; }
-    if(toSel){ var tv=toSel.value; toSel.innerHTML=opts; toSel.value=tv; }
-
-    var allOpts = '<option value="">请选择</option>';
-    window.allLeaders.forEach(function(l){ allOpts += '<option value="'+window.esc(l.name)+'">'+window.esc(l.name)+'</option>'; });
-    var mySel = document.getElementById('myName');
-    if(mySel){ var mv=mySel.value; mySel.innerHTML=allOpts; mySel.value=mv; }
+    var filtered=window.allLeaders.filter(function(l){return l.shift===window.currentShift||l.shift==='both';});
+    var opts='<option value="">请选择</option>';
+    filtered.forEach(function(l){opts+='<option value="'+window.esc(l.name)+'">'+window.esc(l.name)+'</option>';});
+    var fromSel=document.getElementById('fromLeader');
+    var toSel=document.getElementById('toLeader');
+    if(fromSel){var fv=fromSel.value;fromSel.innerHTML=opts;fromSel.value=fv;}
+    if(toSel){var tv=toSel.value;toSel.innerHTML=opts;toSel.value=tv;}
+    var allOpts='<option value="">请选择</option>';
+    window.allLeaders.forEach(function(l){allOpts+='<option value="'+window.esc(l.name)+'">'+window.esc(l.name)+'</option>';});
+    var mySel=document.getElementById('myName');
+    if(mySel){var mv=mySel.value;mySel.innerHTML=allOpts;mySel.value=mv;}
 }
 
-// ===== Leader Management =====
 window.addLeader = async function(){
-    var name = document.getElementById('newLeaderName').value.trim();
-    var shift = document.getElementById('newLeaderShift').value;
-    if(!name){ showToast('⚠️ 请输入班长姓名'); return; }
-    if(window.allLeaders.find(function(l){ return l.name===name; })){ showToast('⚠️ 该班长已存在'); return; }
+    var name=document.getElementById('newLeaderName').value.trim();
+    var shift=document.getElementById('newLeaderShift').value;
+    if(!name){showToast('⚠️ 请输入班长姓名');return;}
+    if(window.allLeaders.find(function(l){return l.name===name;})){showToast('⚠️ 该班长已存在');return;}
     try{
-        await addDoc(collection(db,'leaders'), { name:name, shift:shift, createdAt:serverTimestamp() });
-        document.getElementById('newLeaderName').value = '';
+        await addDoc(collection(db,'leaders'),{name:name,shift:shift,createdAt:serverTimestamp()});
+        document.getElementById('newLeaderName').value='';
         showToast('✅ 班长已添加并同步到所有设备');
-    } catch(e){ showToast('❌ 添加失败: '+e.message); }
+    }catch(e){showToast('❌ 添加失败: '+e.message);}
 }
 
 window.removeLeader = async function(firestoreId){
-    if(!confirm('确定删除该班长？')) return;
+    if(!confirm('确定删除该班长？'))return;
     try{
         await deleteDoc(doc(db,'leaders',firestoreId));
         showToast('🗑️ 已删除');
-    } catch(e){ showToast('❌ 删除失败'); }
+    }catch(e){showToast('❌ 删除失败');}
 }
 
 function renderLeaderList(){
-    var container = document.getElementById('leaderList');
-    if(!container) return;
-    if(window.allLeaders.length===0){ container.innerHTML='<div class="empty-state"><div class="icon">👥</div><p>暂无班长，请添加</p></div>'; return; }
-    var html = '';
+    var container=document.getElementById('leaderList');
+    if(!container)return;
+    if(window.allLeaders.length===0){container.innerHTML='<div class="empty-state"><div class="icon">👥</div><p>暂无班长，请添加</p></div>';return;}
+    var html='';
     window.allLeaders.forEach(function(l){
-        var sl = l.shift==='D'?'☀️ D班':l.shift==='N'?'🌙 N班':'☀️🌙 两班';
-        html += '<div class="leader-item"><div><div class="leader-name">'+window.esc(l.name)+'</div><div class="leader-shift-tag">'+sl+'</div></div>';
-        html += '<button class="btn btn-danger" onclick="removeLeader(\''+l.firestoreId+'\')">删除</button></div>';
+        var sl=l.shift==='D'?'☀️ D班':l.shift==='N'?'🌙 N班':'☀️🌙 两班';
+        html+='<div class="leader-item"><div><div class="leader-name">'+window.esc(l.name)+'</div><div class="leader-shift-tag">'+sl+'</div></div>';
+        html+='<button class="btn btn-danger" onclick="removeLeader(\''+l.firestoreId+'\')">删除</button></div>';
     });
-    container.innerHTML = html;
+    container.innerHTML=html;
 }
 
-// ===== Task Blocks =====
 window.addTaskBlock = function(){
     window.taskBlockCount++;
-    var taskId = window.genId();
-    var container = document.getElementById('taskBlocksContainer');
-    var div = document.createElement('div');
-    div.className = 'task-block';
-    div.id = 'taskBlock_'+window.taskBlockCount;
-    var num = window.taskBlockCount;
-    div.innerHTML =
+    var taskId=window.genId();
+    var container=document.getElementById('taskBlocksContainer');
+    var div=document.createElement('div');
+    div.className='task-block';
+    div.id='taskBlock_'+window.taskBlockCount;
+    var num=window.taskBlockCount;
+    div.innerHTML=
         '<div class="task-block-header">'+
             '<span class="task-block-num">任务 #'+num+'</span>'+
             '<span class="task-id-display">'+taskId+'</span>'+
@@ -494,147 +455,144 @@ window.addTaskBlock = function(){
 }
 
 window.removeTaskBlock = function(num){
-    var el = document.getElementById('taskBlock_'+num);
-    if(el) el.parentNode.removeChild(el);
+    var el=document.getElementById('taskBlock_'+num);
+    if(el)el.parentNode.removeChild(el);
 }
 
 window.submitAllTasks = async function(){
-    var fromLeader = document.getElementById('fromLeader').value;
-    var toLeader = document.getElementById('toLeader').value;
-    if(!fromLeader){ showToast('⚠️ 请选择交班班长'); return; }
-    if(!toLeader){ showToast('⚠️ 请选择接班班长'); return; }
-    if(fromLeader===toLeader){ showToast('⚠️ 交班和接班班长不能相同'); return; }
-    var blocks = document.querySelectorAll('.task-block');
-    if(blocks.length===0){ showToast('⚠️ 请至少添加一个任务'); return; }
-    var newTasks = [];
-    var valid = true;
+    var fromLeader=document.getElementById('fromLeader').value;
+    var toLeader=document.getElementById('toLeader').value;
+    if(!fromLeader){showToast('⚠️ 请选择交班班长');return;}
+    if(!toLeader){showToast('⚠️ 请选择接班班长');return;}
+    if(fromLeader===toLeader){showToast('⚠️ 交班和接班班长不能相同');return;}
+    var blocks=document.querySelectorAll('.task-block');
+    if(blocks.length===0){showToast('⚠️ 请至少添加一个任务');return;}
+    var newTasks=[];
+    var valid=true;
     blocks.forEach(function(block){
-        var title = block.querySelector('.tb-title').value.trim();
-        if(!title){ valid=false; return; }
+        var title=block.querySelector('.tb-title').value.trim();
+        if(!title){valid=false;return;}
         newTasks.push({
-            taskId: block.querySelector('.tb-id').value,
-            shift: window.currentShift,
-            fromLeader: fromLeader,
-            toLeader: toLeader,
-            title: title,
-            description: block.querySelector('.tb-desc').value.trim(),
-            area: block.querySelector('.tb-area').value,
-            priority: block.querySelector('.tb-priority').value,
-            category: block.querySelector('.tb-category').value,
-            status: 'pending',
-            progress: [],
-            transferHistory: [],
-            createdAt: serverTimestamp(),
-            updatedAt: serverTimestamp()
+            taskId:block.querySelector('.tb-id').value,
+            shift:window.currentShift,
+            fromLeader:fromLeader,
+            toLeader:toLeader,
+            title:title,
+            description:block.querySelector('.tb-desc').value.trim(),
+            area:block.querySelector('.tb-area').value,
+            priority:block.querySelector('.tb-priority').value,
+            category:block.querySelector('.tb-category').value,
+            status:'pending',
+            progress:[],
+            transferHistory:[],
+            createdAt:serverTimestamp(),
+            updatedAt:serverTimestamp()
         });
     });
-    if(!valid){ showToast('⚠️ 请填写所有任务标题'); return; }
+    if(!valid){showToast('⚠️ 请填写所有任务标题');return;}
     try{
-        for(var t of newTasks){ await addDoc(collection(db,'tasks'), t); }
+        for(var t of newTasks){await addDoc(collection(db,'tasks'),t);}
         await addDoc(collection(db,'handovers'),{
-            shift: window.currentShift, fromLeader: fromLeader, toLeader: toLeader,
-            taskCount: newTasks.length, createdAt: serverTimestamp()
+            shift:window.currentShift,fromLeader:fromLeader,toLeader:toLeader,
+            taskCount:newTasks.length,createdAt:serverTimestamp()
         });
         document.getElementById('taskBlocksContainer').innerHTML='';
         window.taskBlockCount=0;
         window.addTaskBlock();
         showToast('✅ 提交成功！'+newTasks.length+'项任务已交接给'+toLeader);
-    } catch(e){ showToast('❌ 提交失败: '+e.message); }
+    }catch(e){showToast('❌ 提交失败: '+e.message);}
 }
 
-// ===== Inbox =====
 window.onMyNameChange = function(){
-    window.myNameSelected = document.getElementById('myName').value;
+    window.myNameSelected=document.getElementById('myName').value;
     renderInbox();
     updateInboxBadge();
 }
 
 function updateInboxBadge(){
-    var myName = document.getElementById('myName').value;
-    var badge = document.getElementById('inboxBadge');
-    if(!myName||!badge){ if(badge) badge.innerHTML=''; return; }
-    var count = window.allTasks.filter(function(t){ return t.toLeader===myName && (t.status==='pending'||t.status==='in-progress'); }).length;
-    badge.innerHTML = count>0 ? '<span class="badge">'+count+'</span>' : '';
+    var myName=document.getElementById('myName').value;
+    var badge=document.getElementById('inboxBadge');
+    if(!myName||!badge){if(badge)badge.innerHTML='';return;}
+    var count=window.allTasks.filter(function(t){return t.toLeader===myName&&(t.status==='pending'||t.status==='in-progress');}).length;
+    badge.innerHTML=count>0?'<span class="badge">'+count+'</span>':'';
 }
 
 function renderInbox(){
-    var myName = document.getElementById('myName').value;
-    var container = document.getElementById('inboxList');
-    if(!myName){ container.innerHTML='<div class="empty-state"><div class="icon">👆</div><p>请先选择你的姓名</p></div>'; return; }
-    var tasks = window.allTasks.filter(function(t){ return t.toLeader===myName; });
-    if(tasks.length===0){ container.innerHTML='<div class="empty-state"><div class="icon">🎉</div><p>没有分配给你的任务</p></div>'; return; }
-    var pending = tasks.filter(function(t){ return t.status==='pending'||t.status==='in-progress'; });
-    var done = tasks.filter(function(t){ return t.status==='completed'||t.status==='transferred'; });
-    var html = '';
+    var myName=document.getElementById('myName').value;
+    var container=document.getElementById('inboxList');
+    if(!myName){container.innerHTML='<div class="empty-state"><div class="icon">👆</div><p>请先选择你的姓名</p></div>';return;}
+    var tasks=window.allTasks.filter(function(t){return t.toLeader===myName;});
+    if(tasks.length===0){container.innerHTML='<div class="empty-state"><div class="icon">🎉</div><p>没有分配给你的任务</p></div>';return;}
+    var pending=tasks.filter(function(t){return t.status==='pending'||t.status==='in-progress';});
+    var done=tasks.filter(function(t){return t.status==='completed'||t.status==='transferred';});
+    var html='';
     if(pending.length>0){
-        html += '<div class="section-label">⏳ 需要处理 ('+pending.length+'项)</div>';
-        pending.forEach(function(task){ html += renderInboxItem(task,myName); });
+        html+='<div class="section-label">⏳ 需要处理 ('+pending.length+'项)</div>';
+        pending.forEach(function(task){html+=renderInboxItem(task,myName);});
     }
     if(done.length>0){
-        html += '<div class="section-label" style="margin-top:12px;">✅ 已处理 ('+done.length+'项)</div>';
-        done.forEach(function(task){ html += renderInboxItem(task,myName); });
+        html+='<div class="section-label" style="margin-top:12px;">✅ 已处理 ('+done.length+'项)</div>';
+        done.forEach(function(task){html+=renderInboxItem(task,myName);});
     }
-    container.innerHTML = html;
+    container.innerHTML=html;
 }
 
-function renderInboxItem(task, myName){
-    var pLabel = task.priority==='high'?'🔴 高':task.priority==='medium'?'🟡 中':'🟢 低';
-    var isDone = task.status==='completed'||task.status==='transferred';
-    var html = '<div class="task-item status-'+task.status+'">';
-    html += '<div class="task-id">🔑 '+task.taskId+'</div>';
-    html += '<div class="task-title-text">'+window.esc(task.title)+'</div>';
-    html += '<div class="task-meta">';
-    html += '<span class="task-tag tag-shift">'+task.shift+'班</span>';
-    html += '<span class="task-tag tag-priority-'+task.priority+'">'+pLabel+'</span>';
-    html += '<span class="task-tag tag-area">📍 '+window.esc(task.area)+'</span>';
-    html += '<span class="task-tag status-'+task.status+'-tag">'+window.statusName(task.status)+'</span>';
-    html += '</div>';
-    if(task.description) html += '<div class="task-desc">'+window.esc(task.description)+'</div>';
-    html += '<div class="task-info">👤 来自: <strong>'+window.esc(task.fromLeader)+'</strong> · 🕐 '+window.fmtTime(task.createdAt)+'</div>';
+function renderInboxItem(task,myName){
+    var pLabel=task.priority==='high'?'🔴 高':task.priority==='medium'?'🟡 中':'🟢 低';
+    var isDone=task.status==='completed'||task.status==='transferred';
+    var html='<div class="task-item status-'+task.status+'">';
+    html+='<div class="task-id">🔑 '+task.taskId+'</div>';
+    html+='<div class="task-title-text">'+window.esc(task.title)+'</div>';
+    html+='<div class="task-meta">';
+    html+='<span class="task-tag tag-shift">'+task.shift+'班</span>';
+    html+='<span class="task-tag tag-priority-'+task.priority+'">'+pLabel+'</span>';
+    html+='<span class="task-tag tag-area">📍 '+window.esc(task.area)+'</span>';
+    html+='<span class="task-tag status-'+task.status+'-tag">'+window.statusName(task.status)+'</span>';
+    html+='</div>';
+    if(task.description)html+='<div class="task-desc">'+window.esc(task.description)+'</div>';
+    html+='<div class="task-info">👤 来自: <strong>'+window.esc(task.fromLeader)+'</strong> · 🕐 '+window.fmtTime(task.createdAt)+'</div>';
     if(task.transferHistory&&task.transferHistory.length>0){
-        html += '<div class="transfer-info">🔄 转交记录: '+task.transferHistory.map(function(h){
-            return window.esc(h.from)+' → '+window.esc(h.to);
-        }).join(' → ')+'</div>';
+        html+='<div class="transfer-info">🔄 转交记录: '+task.transferHistory.map(function(h){return window.esc(h.from)+' → '+window.esc(h.to);}).join(' → ')+'</div>';
     }
     if(task.progress&&task.progress.length>0){
-        html += '<div class="progress-section"><div class="progress-header">📝 进度</div>';
+        html+='<div class="progress-section"><div class="progress-header">📝 进度</div>';
         task.progress.slice(-3).forEach(function(p){
-            html += '<div class="progress-item"><span class="progress-time">['+window.fmtTime(p.time)+']</span> '+window.esc(p.content)+'</div>';
+            html+='<div class="progress-item"><span class="progress-time">['+window.fmtTime(p.time)+']</span> '+window.esc(p.content)+'</div>';
         });
-        html += '</div>';
+        html+='</div>';
     }
     if(!isDone){
-        html += '<div class="task-actions">';
-        html += '<select id="inboxStatus_'+task.firestoreId+'">';
-        html += '<option value="pending"'+(task.status==='pending'?' selected':'')+'>⏳ 待处理</option>';
-        html += '<option value="in-progress"'+(task.status==='in-progress'?' selected':'')+'>🔄 进行中</option>';
-        html += '<option value="completed"'+(task.status==='completed'?' selected':'')+'>✅ 已完成</option>';
-        html += '</select>';
-        html += '<button class="btn btn-success btn-small" onclick="confirmInboxTask(\''+task.firestoreId+'\')">✅ 确认</button>';
-        html += '<button class="btn btn-warning btn-small" onclick="openTransferModal(\''+task.firestoreId+'\',\''+window.esc(myName)+'\')">🔄 转交</button>';
-        html += '</div>';
+        html+='<div class="task-actions">';
+        html+='<select id="inboxStatus_'+task.firestoreId+'">';
+        html+='<option value="pending"'+(task.status==='pending'?' selected':'')+'>⏳ 待处理</option>';
+        html+='<option value="in-progress"'+(task.status==='in-progress'?' selected':'')+'>🔄 进行中</option>';
+        html+='<option value="completed"'+(task.status==='completed'?' selected':'')+'>✅ 已完成</option>';
+        html+='</select>';
+        html+='<button class="btn btn-success btn-small" onclick="confirmInboxTask(\''+task.firestoreId+'\')">✅ 确认</button>';
+        html+='<button class="btn btn-warning btn-small" onclick="openTransferModal(\''+task.firestoreId+'\',\''+window.esc(myName)+'\')">🔄 转交</button>';
+        html+='</div>';
     }
-    html += '</div>';
+    html+='</div>';
     return html;
 }
 
 window.confirmInboxTask = async function(firestoreId){
-    var statusEl = document.getElementById('inboxStatus_'+firestoreId);
-    if(!statusEl) return;
-    var newStatus = statusEl.value;
-    var task = window.allTasks.find(function(t){ return t.firestoreId===firestoreId; });
-    if(!task) return;
-    var progress = task.progress||[];
-    progress.push({time: new Date().toISOString(), content:'状态确认: '+window.statusName(task.status)+' → '+window.statusName(newStatus)});
+    var statusEl=document.getElementById('inboxStatus_'+firestoreId);
+    if(!statusEl)return;
+    var newStatus=statusEl.value;
+    var task=window.allTasks.find(function(t){return t.firestoreId===firestoreId;});
+    if(!task)return;
+    var progress=task.progress||[];
+    progress.push({time:new Date().toISOString(),content:'状态确认: '+window.statusName(task.status)+' → '+window.statusName(newStatus)});
     try{
-        await updateDoc(doc(db,'tasks',firestoreId),{ status:newStatus, progress:progress, updatedAt:serverTimestamp() });
+        await updateDoc(doc(db,'tasks',firestoreId),{status:newStatus,progress:progress,updatedAt:serverTimestamp()});
         showToast('✅ 状态已更新');
-    } catch(e){ showToast('❌ 更新失败'); }
+    }catch(e){showToast('❌ 更新失败');}
 }
 
-window.openTransferModal = function(firestoreId, myName){
-    var others = window.allLeaders.filter(function(l){ return l.name!==myName; });
-    var opts = others.map(function(l){ return '<option value="'+window.esc(l.name)+'">'+window.esc(l.name)+'</option>'; }).join('');
+window.openTransferModal = function(firestoreId,myName){
+    var others=window.allLeaders.filter(function(l){return l.name!==myName;});
+    var opts=others.map(function(l){return '<option value="'+window.esc(l.name)+'">'+window.esc(l.name)+'</option>';}).join('');
     document.getElementById('modalTitle').textContent='🔄 转交任务';
     document.getElementById('modalBody').innerHTML=
         '<div class="form-group"><label>转交给</label><select id="transferTo"><option value="">请选择班长</option>'+opts+'</select></div>'+
@@ -643,33 +601,32 @@ window.openTransferModal = function(firestoreId, myName){
     document.getElementById('taskModal').classList.add('show');
 }
 
-window.doTransfer = async function(firestoreId, myName){
-    var toLeader = document.getElementById('transferTo').value;
-    var reason = document.getElementById('transferReason').value.trim();
-    if(!toLeader){ showToast('⚠️ 请选择转交对象'); return; }
-    var task = window.allTasks.find(function(t){ return t.firestoreId===firestoreId; });
-    if(!task) return;
-    var history = task.transferHistory||[];
-    history.push({from:myName, to:toLeader, time:new Date().toISOString(), reason:reason});
-    var progress = task.progress||[];
-    progress.push({time:new Date().toISOString(), content:'任务转交: '+myName+' → '+toLeader+(reason?' ('+reason+')':'')});
+window.doTransfer = async function(firestoreId,myName){
+    var toLeader=document.getElementById('transferTo').value;
+    var reason=document.getElementById('transferReason').value.trim();
+    if(!toLeader){showToast('⚠️ 请选择转交对象');return;}
+    var task=window.allTasks.find(function(t){return t.firestoreId===firestoreId;});
+    if(!task)return;
+    var history=task.transferHistory||[];
+    history.push({from:myName,to:toLeader,time:new Date().toISOString(),reason:reason});
+    var progress=task.progress||[];
+    progress.push({time:new Date().toISOString(),content:'任务转交: '+myName+' → '+toLeader+(reason?' ('+reason+')':'')});
     try{
         await updateDoc(doc(db,'tasks',firestoreId),{
-            toLeader:toLeader, fromLeader:myName, status:'pending',
-            transferHistory:history, progress:progress, updatedAt:serverTimestamp()
+            toLeader:toLeader,fromLeader:myName,status:'pending',
+            transferHistory:history,progress:progress,updatedAt:serverTimestamp()
         });
         window.closeModal();
         showToast('✅ 任务已转交给 '+toLeader);
-    } catch(e){ showToast('❌ 转交失败'); }
+    }catch(e){showToast('❌ 转交失败');}
 }
 
-// ===== Task List =====
 window.renderTasks = function(){
-    var container = document.getElementById('taskList');
-    var sv = (document.getElementById('searchInput').value||'').trim().toLowerCase();
-    var filtered = window.allTasks;
-    if(window.currentFilter!=='all') filtered=filtered.filter(function(t){return t.status===window.currentFilter;});
-    if(sv) filtered=filtered.filter(function(t){
+    var container=document.getElementById('taskList');
+    var sv=(document.getElementById('searchInput').value||'').trim().toLowerCase();
+    var filtered=window.allTasks;
+    if(window.currentFilter!=='all')filtered=filtered.filter(function(t){return t.status===window.currentFilter;});
+    if(sv)filtered=filtered.filter(function(t){
         return (t.title||'').toLowerCase().indexOf(sv)>=0||(t.description||'').toLowerCase().indexOf(sv)>=0||
                (t.fromLeader||'').toLowerCase().indexOf(sv)>=0||(t.toLeader||'').toLowerCase().indexOf(sv)>=0||
                (t.taskId||'').toLowerCase().indexOf(sv)>=0;
@@ -688,7 +645,7 @@ window.renderTasks = function(){
         html+='<span class="task-tag tag-area">📍 '+window.esc(task.area)+'</span>';
         html+='<span class="task-tag" style="background:#f3f4f6;color:#666;">📁 '+window.catName(task.category)+'</span>';
         html+='</div>';
-        if(task.description) html+='<div class="task-desc">'+window.esc(task.description)+'</div>';
+        if(task.description)html+='<div class="task-desc">'+window.esc(task.description)+'</div>';
         html+='<div class="task-info">👤 '+window.esc(task.fromLeader)+' → <strong>'+window.esc(task.toLeader)+'</strong> · 🕐 '+window.fmtTime(task.createdAt)+'</div>';
         if(task.transferHistory&&task.transferHistory.length>0){
             html+='<div class="transfer-info">🔄 '+task.transferHistory.map(function(h){return window.esc(h.from)+' → '+window.esc(h.to);}).join(' → ')+'</div>';
@@ -712,10 +669,9 @@ window.filterTasks = function(status,btn){
     window.renderTasks();
 }
 
-// ===== Handover List =====
 function renderHandoverList(){
     var container=document.getElementById('handoverList');
-    if(!container) return;
+    if(!container)return;
     if(window.allHandovers.length===0){container.innerHTML='<div class="empty-state"><div class="icon">📜</div><p>暂无交接记录</p></div>';return;}
     var html='';
     window.allHandovers.forEach(function(r){
@@ -727,7 +683,6 @@ function renderHandoverList(){
     container.innerHTML=html;
 }
 
-// ===== Stats =====
 window.renderStats = function(){
     var tasks=window.allTasks;
     var total=tasks.length;
@@ -743,12 +698,12 @@ window.renderStats = function(){
     document.getElementById('statHandovers').textContent=window.allHandovers.length;
     var rate=total>0?Math.round((completed/total)*100):0;
     var bar=document.getElementById('progressBar');
-    bar.style.width=Math.max(rate,3)+'%'; bar.textContent=rate+'%';
+    bar.style.width=Math.max(rate,3)+'%';bar.textContent=rate+'%';
     var cats={};
     tasks.forEach(function(t){var c=window.catName(t.category);cats[c]=(cats[c]||0)+1;});
     var catHtml='';
     if(Object.keys(cats).length===0){catHtml='<p style="font-size:12px;color:#999;text-align:center;">暂无数据</p>';}
-    else{ Object.entries(cats).sort(function(a,b){return b[1]-a[1];}).forEach(function(item){
+    else{Object.entries(cats).sort(function(a,b){return b[1]-a[1];}).forEach(function(item){
         var pct=total>0?Math.round((item[1]/total)*100):0;
         catHtml+='<div class="cat-bar-item"><div class="cat-bar-header"><span>'+item[0]+'</span><span>'+item[1]+' ('+pct+'%)</span></div>';
         catHtml+='<div class="cat-bar-bg"><div class="cat-bar-fill" style="width:'+pct+'%;"></div></div></div>';
@@ -765,7 +720,6 @@ window.renderStats = function(){
     document.getElementById('shiftStats').innerHTML=shiftHtml;
 }
 
-// ===== Export =====
 window.exportCSV = function(){
     var tasks=window.allTasks;
     if(tasks.length===0){showToast('⚠️ 没有数据');return;}
@@ -779,33 +733,32 @@ window.exportCSV = function(){
     dlFile(csv,'交接班数据_'+new Date().toISOString().slice(0,10)+'.csv','text/csv');
     showToast('📊 CSV已导出');
 }
-    window.clearTasksOnly = async function(){
-    if(!confirm('⚠️ 确定要清空所有任务和交接记录吗？\n\n✅ 班长名单会保留\n❌ 所有任务和交接记录将被删除\n\n此操作不可恢复！')) return;
-    if(!confirm('再次确认：删除所有任务数据？')) return;
-    try{
-        var taskDocs = await getDocs(collection(db,'tasks'));
-        for(var d of taskDocs.docs){ await deleteDoc(doc(db,'tasks',d.id)); }
-        var handoverDocs = await getDocs(collection(db,'handovers'));
-        for(var d of handoverDocs.docs){ await deleteDoc(doc(db,'handovers',d.id)); }
-        showToast('✅ 任务数据已清空，班长名单已保留');
-    } catch(e){
-        showToast('❌ 清空失败: '+e.message);
-    }
-}
+
 window.exportJSON = function(){
     var data={exportTime:new Date().toISOString(),tasks:window.allTasks,handovers:window.allHandovers,leaders:window.allLeaders};
     dlFile(JSON.stringify(data,null,2),'交接班数据_'+new Date().toISOString().slice(0,10)+'.json','application/json');
     showToast('📥 JSON已导出');
 }
+
+window.clearTasksOnly = async function(){
+    if(!confirm('⚠️ 确定要清空所有任务和交接记录吗？\n\n✅ 班长名单会保留\n❌ 所有任务和交接记录将被删除\n\n此操作不可恢复！'))return;
+    if(!confirm('再次确认：删除所有任务数据？'))return;
+    try{
+        var taskDocs=await getDocs(collection(db,'tasks'));
+        for(var d of taskDocs.docs){await deleteDoc(doc(db,'tasks',d.id));}
+        var handoverDocs=await getDocs(collection(db,'handovers'));
+        for(var d of handoverDocs.docs){await deleteDoc(doc(db,'handovers',d.id));}
+        showToast('✅ 任务数据已清空，班长名单已保留');
+    }catch(e){showToast('❌ 清空失败: '+e.message);}
+}
+
 function dlFile(content,filename,type){
     var a=document.createElement('a');
     a.href=URL.createObjectURL(new Blob([content],{type:type}));
-    a.download=filename; document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    a.download=filename;document.body.appendChild(a);a.click();document.body.removeChild(a);
 }
 
-// ===== Init =====
 window.addTaskBlock();
-
 </script>
 </body>
 </html>
