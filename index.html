@@ -255,7 +255,11 @@
     <div class="export-section">
         <button class="export-btn" onclick="exportCSV()">📊 导出CSV</button>
         <button class="export-btn" onclick="exportJSON()">📥 导出JSON</button>
-    </div>
+   </div>
+        <div class="export-section">
+    <button class="export-btn" style="color:var(--danger);border-color:var(--danger);font-weight:700;" onclick="clearTasksOnly()">
+        🗑️ 清空任务数据（保留班长名单）
+    </button>
 </div>
 
 <!-- Admin Tab -->
@@ -773,6 +777,19 @@ window.exportCSV = function(){
     });
     dlFile(csv,'交接班数据_'+new Date().toISOString().slice(0,10)+'.csv','text/csv');
     showToast('📊 CSV已导出');
+}
+    window.clearTasksOnly = async function(){
+    if(!confirm('⚠️ 确定要清空所有任务和交接记录吗？\n\n✅ 班长名单会保留\n❌ 所有任务和交接记录将被删除\n\n此操作不可恢复！')) return;
+    if(!confirm('再次确认：删除所有任务数据？')) return;
+    try{
+        var taskDocs = await getDocs(collection(db,'tasks'));
+        for(var d of taskDocs.docs){ await deleteDoc(doc(db,'tasks',d.id)); }
+        var handoverDocs = await getDocs(collection(db,'handovers'));
+        for(var d of handoverDocs.docs){ await deleteDoc(doc(db,'handovers',d.id)); }
+        showToast('✅ 任务数据已清空，班长名单已保留');
+    } catch(e){
+        showToast('❌ 清空失败: '+e.message);
+    }
 }
 window.exportJSON = function(){
     var data={exportTime:new Date().toISOString(),tasks:window.allTasks,handovers:window.allHandovers,leaders:window.allLeaders};
