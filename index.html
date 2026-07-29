@@ -139,7 +139,6 @@
         .pwd-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(26,115,232,0.12); }
         .admin-status { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; margin-bottom: 12px; }
         .admin-status.unlocked { background: #e6f4ea; color: var(--success); }
-        .admin-status.locked { background: #fce8e6; color: var(--danger); }
     </style>
 </head>
 <body>
@@ -250,7 +249,6 @@
 
 <!-- Admin Tab -->
 <div id="tab-admin" class="tab-content">
-    <!-- 锁定状态 -->
     <div id="adminLockScreen" class="admin-lock">
         <div class="lock-icon">🔐</div>
         <p>此页面仅限管理员访问<br>请输入管理员密码</p>
@@ -258,8 +256,6 @@
             onkeydown="if(event.key==='Enter')checkAdminPwd()">
         <button class="btn btn-primary" onclick="checkAdminPwd()">🔓 验证密码</button>
     </div>
-
-    <!-- 解锁后显示 -->
     <div id="adminContent" style="display:none;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
             <span class="admin-status unlocked">🟢 管理员已登录</span>
@@ -326,6 +322,7 @@ window.checkAdminPwd = function(){
     var input = document.getElementById('adminPwdInput').value;
     if(input === ADMIN_PASSWORD){
         window.isAdminUnlocked = true;
+        sessionStorage.setItem('adminUnlocked','1');
         document.getElementById('adminLockScreen').style.display = 'none';
         document.getElementById('adminContent').style.display = 'block';
         document.getElementById('adminPwdInput').value = '';
@@ -340,9 +337,21 @@ window.checkAdminPwd = function(){
 
 window.lockAdmin = function(){
     window.isAdminUnlocked = false;
+    sessionStorage.removeItem('adminUnlocked');
     document.getElementById('adminLockScreen').style.display = 'block';
     document.getElementById('adminContent').style.display = 'none';
     showToast('🔒 已退出管理员');
+}
+
+// 恢复管理员状态
+if(sessionStorage.getItem('adminUnlocked')==='1'){
+    window.isAdminUnlocked = true;
+    setTimeout(function(){
+        var ls = document.getElementById('adminLockScreen');
+        var ac = document.getElementById('adminContent');
+        if(ls) ls.style.display='none';
+        if(ac) ac.style.display='block';
+    },100);
 }
 
 // ===== Global State =====
@@ -394,6 +403,7 @@ onSnapshot(query(collection(db,'leaders'),orderBy('createdAt','asc')), function(
     document.getElementById('syncStatus').innerHTML='<span class="sync-online">🟢 已同步</span>';
 }, function(err){
     document.getElementById('syncStatus').innerHTML='<span class="sync-offline">🔴 连接失败</span>';
+    console.error(err);
 });
 
 onSnapshot(query(collection(db,'tasks'),orderBy('createdAt','desc')), function(snapshot){
@@ -429,7 +439,7 @@ window.selectShift = function(el,shift){
     refreshLeaderSelects();
 }
 
-// ===== Leader Selects =====
+// ===== Leader Selects - 关键修复：保存和恢复选中的姓名 =====
 function refreshLeaderSelects(){
     var filtered=window.allLeaders.filter(function(l){return l.shift===window.currentShift||l.shift==='both';});
     var opts='<option value="">请选择</option>';
@@ -438,13 +448,29 @@ function refreshLeaderSelects(){
     var toSel=document.getElementById('toLeader');
     if(fromSel){var fv=fromSel.value;fromSel.innerHTML=opts;fromSel.value=fv;}
     if(toSel){var tv=toSel.value;toSel.innerHTML=opts;toSel.value=tv;}
+
     var allOpts='<option value="">请选择</option>';
     window.allLeaders.forEach(function(l){allOpts+='<option value="'+window.esc(l.name)+'">'+window.esc(l.name)+'</option>';});
     var mySel=document.getElementById('myName');
-    if(mySel){var mv=mySel.value;mySel.innerHTML=allOpts;mySel.value=mv;}
+    if(mySel){
+        var mv=mySel.value;
+        mySel.innerHTML=allOpts;
+        // 优先恢复当前值，其次从sessionStorage恢复
+        var savedName=sessionStorage.getItem('mySelectedName');
+        if(mv && mv!==''){
+            mySel.value=mv;
+        } else if(savedName){
+            mySel.value=savedName;
+            if(mySel.value===savedName){
+                window.myNameSelected=savedName;
+                updateInboxBadge();
+                renderInbox();
+            }
+        }
+    }
 }
 
-// ===== Leader Management (需要管理员) =====
+// ===== Leader Management =====
 window.addLeader = async function(){
     if(!window.isAdminUnlocked){showToast('❌ 请先验证管理员密码');return;}
     var name=document.getElementById('newLeaderName').value.trim();
@@ -567,7 +593,13 @@ window.submitAllTasks = async function(){
 
 // ===== Inbox =====
 window.onMyNameChange = function(){
-    window.myNameSelected=document.getElementById('myName').value;
+    var myName=document.getElementById('myName').value;
+    window.myNameSelected=myName;
+    if(myName){
+        sessionStorage.setItem('mySelectedName',myName);
+    }else{
+        sessionStorage.removeItem('mySelectedName');
+    }
     renderInbox();
     updateInboxBadge();
 }
@@ -807,12 +839,8 @@ window.exportJSON = function(){
     showToast('📥 JSON已导出');
 }
 
-// ===== 清空数据（需要管理员）=====
 window.clearTasksOnly = async function(){
-    if(!window.isAdminUnlocked){
-        showToast('❌ 需要管理员权限，请先在管理页面验证密码');
-        return;
-    }
+    if(!window.isAdminUnlocked){showToast('❌ 需要管理员权限，请先在管理页面验证密码');return;}
     if(!confirm('⚠️ 确定要清空所有任务和交接记录吗？\n\n✅ 班长名单会保留\n❌ 所有任务和交接记录将被删除\n\n此操作不可恢复！'))return;
     if(!confirm('再次确认：删除所有任务数据？'))return;
     try{
