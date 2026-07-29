@@ -132,6 +132,14 @@
         .section-label { font-size: 12px; font-weight: 600; color: var(--text-secondary); margin-bottom: 8px; }
         .badge { display: inline-flex; align-items: center; justify-content: center; background: var(--danger); color: white; font-size: 10px; font-weight: 700; min-width: 16px; height: 16px; border-radius: 8px; padding: 0 4px; margin-left: 4px; }
         .info-box { background: #fff8e1; border: 1px solid #ffe082; border-radius: 8px; padding: 10px 12px; font-size: 12px; color: #e65100; margin-bottom: 12px; line-height: 1.5; }
+        .admin-lock { background: #fce8e6; border: 1px solid #f5c6c6; border-radius: 12px; padding: 30px 20px; text-align: center; }
+        .admin-lock .lock-icon { font-size: 48px; margin-bottom: 12px; }
+        .admin-lock p { font-size: 13px; color: var(--text-secondary); margin-bottom: 16px; }
+        .pwd-input { width: 100%; padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 14px; text-align: center; letter-spacing: 2px; margin-bottom: 12px; }
+        .pwd-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(26,115,232,0.12); }
+        .admin-status { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; margin-bottom: 12px; }
+        .admin-status.unlocked { background: #e6f4ea; color: var(--success); }
+        .admin-status.locked { background: #fce8e6; color: var(--danger); }
     </style>
 </head>
 <body>
@@ -242,26 +250,42 @@
 
 <!-- Admin Tab -->
 <div id="tab-admin" class="tab-content">
-    <div class="card">
-        <div class="card-title">👥 班长名单管理</div>
-        <div class="info-box">✅ 在此添加的班长名单会实时同步到所有设备！</div>
-        <div class="form-row">
-            <div class="form-group">
-                <label>班长姓名</label>
-                <input type="text" id="newLeaderName" placeholder="输入姓名">
-            </div>
-            <div class="form-group">
-                <label>所属班次</label>
-                <select id="newLeaderShift">
-                    <option value="D">☀️ D班</option>
-                    <option value="N">🌙 N班</option>
-                    <option value="both">两班</option>
-                </select>
-            </div>
+    <!-- 锁定状态 -->
+    <div id="adminLockScreen" class="admin-lock">
+        <div class="lock-icon">🔐</div>
+        <p>此页面仅限管理员访问<br>请输入管理员密码</p>
+        <input type="password" class="pwd-input" id="adminPwdInput" placeholder="请输入密码"
+            onkeydown="if(event.key==='Enter')checkAdminPwd()">
+        <button class="btn btn-primary" onclick="checkAdminPwd()">🔓 验证密码</button>
+    </div>
+
+    <!-- 解锁后显示 -->
+    <div id="adminContent" style="display:none;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+            <span class="admin-status unlocked">🟢 管理员已登录</span>
+            <button class="btn btn-danger" onclick="lockAdmin()" style="width:auto;padding:6px 14px;font-size:12px;">🔒 退出管理</button>
         </div>
-        <button class="btn btn-primary" onclick="addLeader()" style="margin-bottom:14px;">➕ 添加班长</button>
-        <div class="section-label">当前班长名单</div>
-        <div id="leaderList"><div class="loading">⏳ 加载中...</div></div>
+        <div class="card">
+            <div class="card-title">👥 班长名单管理</div>
+            <div class="info-box">✅ 在此添加的班长名单会实时同步到所有设备！</div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>班长姓名</label>
+                    <input type="text" id="newLeaderName" placeholder="输入姓名">
+                </div>
+                <div class="form-group">
+                    <label>所属班次</label>
+                    <select id="newLeaderShift">
+                        <option value="D">☀️ D班</option>
+                        <option value="N">🌙 N班</option>
+                        <option value="both">两班</option>
+                    </select>
+                </div>
+            </div>
+            <button class="btn btn-primary" onclick="addLeader()" style="margin-bottom:14px;">➕ 添加班长</button>
+            <div class="section-label">当前班长名单</div>
+            <div id="leaderList"><div class="loading">⏳ 加载中...</div></div>
+        </div>
     </div>
 </div>
 
@@ -294,6 +318,34 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
+// ===== 管理员密码 =====
+const ADMIN_PASSWORD = 'Tec.123456';
+window.isAdminUnlocked = false;
+
+window.checkAdminPwd = function(){
+    var input = document.getElementById('adminPwdInput').value;
+    if(input === ADMIN_PASSWORD){
+        window.isAdminUnlocked = true;
+        document.getElementById('adminLockScreen').style.display = 'none';
+        document.getElementById('adminContent').style.display = 'block';
+        document.getElementById('adminPwdInput').value = '';
+        showToast('✅ 管理员验证成功');
+        renderLeaderList();
+    } else {
+        showToast('❌ 密码错误，请重试');
+        document.getElementById('adminPwdInput').value = '';
+        document.getElementById('adminPwdInput').focus();
+    }
+}
+
+window.lockAdmin = function(){
+    window.isAdminUnlocked = false;
+    document.getElementById('adminLockScreen').style.display = 'block';
+    document.getElementById('adminContent').style.display = 'none';
+    showToast('🔒 已退出管理员');
+}
+
+// ===== Global State =====
 window.currentShift = 'D';
 window.currentFilter = 'all';
 window.taskBlockCount = 0;
@@ -301,6 +353,7 @@ window.allTasks = [];
 window.allLeaders = [];
 window.allHandovers = [];
 
+// ===== Clock =====
 function updateClock(){
     var n=new Date();
     var el=document.getElementById('currentTime');
@@ -309,6 +362,7 @@ function updateClock(){
 }
 updateClock(); setInterval(updateClock,1000);
 
+// ===== Helpers =====
 window.genId = function(){ return 'T'+Date.now().toString(36).toUpperCase()+Math.random().toString(36).substr(2,4).toUpperCase(); }
 window.fmtTime = function(ts){
     if(!ts) return '';
@@ -331,11 +385,12 @@ window.showToast = function(msg){
 }
 window.closeModal = function(){ document.getElementById('taskModal').classList.remove('show'); }
 
+// ===== Real-time Listeners =====
 onSnapshot(query(collection(db,'leaders'),orderBy('createdAt','asc')), function(snapshot){
     window.allLeaders=[];
     snapshot.forEach(function(d){ window.allLeaders.push({firestoreId:d.id,...d.data()}); });
     refreshLeaderSelects();
-    renderLeaderList();
+    if(window.isAdminUnlocked) renderLeaderList();
     document.getElementById('syncStatus').innerHTML='<span class="sync-online">🟢 已同步</span>';
 }, function(err){
     document.getElementById('syncStatus').innerHTML='<span class="sync-offline">🔴 连接失败</span>';
@@ -358,6 +413,7 @@ onSnapshot(query(collection(db,'handovers'),orderBy('createdAt','desc')), functi
     renderStats();
 });
 
+// ===== Tab Switch =====
 window.switchTab = function(name,btn){
     document.querySelectorAll('.tab-content').forEach(function(t){t.classList.remove('active');});
     document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('active');});
@@ -365,6 +421,7 @@ window.switchTab = function(name,btn){
     btn.classList.add('active');
 }
 
+// ===== Shift =====
 window.selectShift = function(el,shift){
     document.querySelectorAll('.shift-option').forEach(function(s){s.classList.remove('selected');});
     el.classList.add('selected');
@@ -372,6 +429,7 @@ window.selectShift = function(el,shift){
     refreshLeaderSelects();
 }
 
+// ===== Leader Selects =====
 function refreshLeaderSelects(){
     var filtered=window.allLeaders.filter(function(l){return l.shift===window.currentShift||l.shift==='both';});
     var opts='<option value="">请选择</option>';
@@ -386,7 +444,9 @@ function refreshLeaderSelects(){
     if(mySel){var mv=mySel.value;mySel.innerHTML=allOpts;mySel.value=mv;}
 }
 
+// ===== Leader Management (需要管理员) =====
 window.addLeader = async function(){
+    if(!window.isAdminUnlocked){showToast('❌ 请先验证管理员密码');return;}
     var name=document.getElementById('newLeaderName').value.trim();
     var shift=document.getElementById('newLeaderShift').value;
     if(!name){showToast('⚠️ 请输入班长姓名');return;}
@@ -399,6 +459,7 @@ window.addLeader = async function(){
 }
 
 window.removeLeader = async function(firestoreId){
+    if(!window.isAdminUnlocked){showToast('❌ 请先验证管理员密码');return;}
     if(!confirm('确定删除该班长？'))return;
     try{
         await deleteDoc(doc(db,'leaders',firestoreId));
@@ -419,6 +480,7 @@ function renderLeaderList(){
     container.innerHTML=html;
 }
 
+// ===== Task Blocks =====
 window.addTaskBlock = function(){
     window.taskBlockCount++;
     var taskId=window.genId();
@@ -503,6 +565,7 @@ window.submitAllTasks = async function(){
     }catch(e){showToast('❌ 提交失败: '+e.message);}
 }
 
+// ===== Inbox =====
 window.onMyNameChange = function(){
     window.myNameSelected=document.getElementById('myName').value;
     renderInbox();
@@ -621,6 +684,7 @@ window.doTransfer = async function(firestoreId,myName){
     }catch(e){showToast('❌ 转交失败');}
 }
 
+// ===== Task List =====
 window.renderTasks = function(){
     var container=document.getElementById('taskList');
     var sv=(document.getElementById('searchInput').value||'').trim().toLowerCase();
@@ -669,6 +733,7 @@ window.filterTasks = function(status,btn){
     window.renderTasks();
 }
 
+// ===== Handover List =====
 function renderHandoverList(){
     var container=document.getElementById('handoverList');
     if(!container)return;
@@ -683,6 +748,7 @@ function renderHandoverList(){
     container.innerHTML=html;
 }
 
+// ===== Stats =====
 window.renderStats = function(){
     var tasks=window.allTasks;
     var total=tasks.length;
@@ -720,6 +786,7 @@ window.renderStats = function(){
     document.getElementById('shiftStats').innerHTML=shiftHtml;
 }
 
+// ===== Export =====
 window.exportCSV = function(){
     var tasks=window.allTasks;
     if(tasks.length===0){showToast('⚠️ 没有数据');return;}
@@ -740,7 +807,12 @@ window.exportJSON = function(){
     showToast('📥 JSON已导出');
 }
 
+// ===== 清空数据（需要管理员）=====
 window.clearTasksOnly = async function(){
+    if(!window.isAdminUnlocked){
+        showToast('❌ 需要管理员权限，请先在管理页面验证密码');
+        return;
+    }
     if(!confirm('⚠️ 确定要清空所有任务和交接记录吗？\n\n✅ 班长名单会保留\n❌ 所有任务和交接记录将被删除\n\n此操作不可恢复！'))return;
     if(!confirm('再次确认：删除所有任务数据？'))return;
     try{
