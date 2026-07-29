@@ -150,7 +150,7 @@
 <div class="tab-nav">
     <button class="tab-btn active" onclick="switchTab('create',this)"><span class="tab-icon">✏️</span>新建</button>
     <button class="tab-btn" onclick="switchTab('inbox',this)"><span class="tab-icon">📥</span>待确认<span id="inboxBadge"></span></button>
-    <button class="tab-btn" onclick="switchTab('tasks',this)"><span class="tab-icon">📋</span>任务</button>
+    <button class="tab-btn" onclick="switchTab('tasks',this)"><span class="tab-icon">📋</span>任务<span id="taskBadge"></span></button>
     <button class="tab-btn" onclick="switchTab('handover',this)"><span class="tab-icon">🤝</span>交接</button>
     <button class="tab-btn" onclick="switchTab('stats',this)"><span class="tab-icon">📊</span>统计</button>
     <button class="tab-btn" onclick="switchTab('admin',this)"><span class="tab-icon">⚙️</span>管理</button>
@@ -258,12 +258,7 @@
 <div id="toast" class="toast"></div>
 
 <script>
-// ==========================================
-// API 地址 - 使用 Cloudflare Pages 同域名
-// ==========================================
 var API_BASE = 'https://shift-app-6u7.pages.dev';
-
-// ===== 管理员密码 =====
 var ADMIN_PASSWORD = 'Tec.123456';
 var isAdminUnlocked = sessionStorage.getItem('adminUnlocked')==='1';
 if(isAdminUnlocked){
@@ -275,11 +270,9 @@ if(isAdminUnlocked){
     },100);
 }
 
-// ===== State =====
 var currentShift='D', currentFilter='all', taskBlockCount=0;
 var allTasks=[], allLeaders=[], allHandovers=[];
 
-// ===== Clock =====
 function updateClock(){
     var n=new Date();
     var el=document.getElementById('currentTime');
@@ -288,7 +281,6 @@ function updateClock(){
 }
 updateClock();setInterval(updateClock,1000);
 
-// ===== Helpers =====
 function genId(){return 'T'+Date.now().toString(36).toUpperCase()+Math.random().toString(36).substr(2,4).toUpperCase();}
 function fmtTime(ts){
     if(!ts)return '';
@@ -303,7 +295,6 @@ function esc(t){var d=document.createElement('div');d.textContent=t||'';return d
 function showToast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(function(){t.classList.remove('show');},2500);}
 function closeModal(){document.getElementById('taskModal').classList.remove('show');}
 
-// ===== API =====
 async function api(path,method,body){
     var opts={method:method||'GET',headers:{'Content-Type':'application/json'}};
     if(body)opts.body=JSON.stringify(body);
@@ -311,7 +302,6 @@ async function api(path,method,body){
     return await res.json();
 }
 
-// ===== 加载数据 =====
 async function loadAll(){
     try{
         document.getElementById('syncStatus').innerHTML='<span class="sync-offline">⏳ 同步中...</span>';
@@ -328,6 +318,7 @@ async function loadAll(){
         renderStats();
         renderHandoverList();
         updateInboxBadge();
+        updateTaskBadge();
         if(isAdminUnlocked)renderLeaderList();
         var myName=document.getElementById('myName').value;
         if(myName)renderInbox();
@@ -337,11 +328,8 @@ async function loadAll(){
         console.error('loadAll error:',e);
     }
 }
-
-// 每30秒自动刷新
 setInterval(loadAll,30000);
 
-// ===== Admin =====
 function checkAdminPwd(){
     var input=document.getElementById('adminPwdInput').value;
     if(input===ADMIN_PASSWORD){
@@ -365,7 +353,6 @@ function lockAdmin(){
     showToast('🔒 已退出管理员');
 }
 
-// ===== Tab =====
 function switchTab(name,btn){
     document.querySelectorAll('.tab-content').forEach(function(t){t.classList.remove('active');});
     document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('active');});
@@ -374,7 +361,6 @@ function switchTab(name,btn){
     loadAll();
 }
 
-// ===== Shift =====
 function selectShift(el,shift){
     document.querySelectorAll('.shift-option').forEach(function(s){s.classList.remove('selected');});
     el.classList.add('selected');
@@ -382,7 +368,6 @@ function selectShift(el,shift){
     refreshLeaderSelects();
 }
 
-// ===== Leader Selects =====
 function refreshLeaderSelects(){
     var filtered=allLeaders.filter(function(l){return l.shift===currentShift||l.shift==='both';});
     var opts='<option value="">请选择</option>';
@@ -403,7 +388,6 @@ function refreshLeaderSelects(){
     }
 }
 
-// ===== Leader Management =====
 async function addLeader(){
     if(!isAdminUnlocked){showToast('❌ 请先验证管理员密码');return;}
     var name=document.getElementById('newLeaderName').value.trim();
@@ -436,7 +420,6 @@ function renderLeaderList(){
     container.innerHTML=html;
 }
 
-// ===== Task Blocks =====
 function addTaskBlock(){
     taskBlockCount++;
     var taskId=genId();
@@ -497,13 +480,15 @@ async function submitAllTasks(){
     }else showToast('❌ 提交失败: '+(res.error||''));
 }
 
-// ===== Inbox =====
 function onMyNameChange(){
     var myName=document.getElementById('myName').value;
     if(myName)sessionStorage.setItem('mySelectedName',myName);
     else sessionStorage.removeItem('mySelectedName');
-    renderInbox();updateInboxBadge();
+    renderInbox();
+    updateInboxBadge();
+    updateTaskBadge();
 }
+
 function updateInboxBadge(){
     var myName=document.getElementById('myName').value;
     var badge=document.getElementById('inboxBadge');
@@ -511,6 +496,26 @@ function updateInboxBadge(){
     var count=allTasks.filter(function(t){return t.to_leader===myName&&(t.status==='pending'||t.status==='in-progress');}).length;
     badge.innerHTML=count>0?'<span class="badge">'+count+'</span>':'';
 }
+
+function updateTaskBadge(){
+    var badge=document.getElementById('taskBadge');
+    if(!badge)return;
+    var myName=document.getElementById('myName').value;
+    var count=0;
+    if(myName){
+        // 选择了班长：显示本人未完成任务数
+        count=allTasks.filter(function(t){
+            return t.to_leader===myName&&(t.status==='pending'||t.status==='in-progress');
+        }).length;
+    }else{
+        // 未选择班长：显示全部未完成任务数
+        count=allTasks.filter(function(t){
+            return t.status==='pending'||t.status==='in-progress';
+        }).length;
+    }
+    badge.innerHTML=count>0?'<span class="badge">'+count+'</span>':'';
+}
+
 function renderInbox(){
     var myName=document.getElementById('myName').value;
     var container=document.getElementById('inboxList');
@@ -530,6 +535,7 @@ function renderInbox(){
     }
     container.innerHTML=html;
 }
+
 function renderInboxItem(task,myName){
     var pLabel=task.priority==='high'?'🔴 高':task.priority==='medium'?'🟡 中':'🟢 低';
     var isDone=task.status==='completed'||task.status==='transferred';
@@ -568,6 +574,7 @@ function renderInboxItem(task,myName){
     html+='</div>';
     return html;
 }
+
 async function confirmInboxTask(taskId){
     var statusEl=document.getElementById('inboxStatus_'+taskId);
     if(!statusEl)return;
@@ -575,6 +582,7 @@ async function confirmInboxTask(taskId){
     if(res.success){showToast('✅ 状态已更新');loadAll();}
     else showToast('❌ 更新失败');
 }
+
 function openTransferModal(taskId,myName){
     var others=allLeaders.filter(function(l){return l.name!==myName;});
     var opts=others.map(function(l){return '<option value="'+esc(l.name)+'">'+esc(l.name)+'</option>';}).join('');
@@ -585,6 +593,7 @@ function openTransferModal(taskId,myName){
         '<button class="btn btn-primary" onclick="doTransfer(\''+taskId+'\',\''+esc(myName)+'\')">确认转交</button>';
     document.getElementById('taskModal').classList.add('show');
 }
+
 async function doTransfer(taskId,myName){
     var toLeader=document.getElementById('transferTo').value;
     var reason=document.getElementById('transferReason').value.trim();
@@ -594,7 +603,6 @@ async function doTransfer(taskId,myName){
     else showToast('❌ 转交失败');
 }
 
-// ===== Task List =====
 function renderTasks(){
     var container=document.getElementById('taskList');
     var sv=(document.getElementById('searchInput').value||'').trim().toLowerCase();
@@ -635,13 +643,13 @@ function renderTasks(){
     });
     container.innerHTML=html;
 }
+
 function filterTasks(status,btn){
     currentFilter=status;
     document.querySelectorAll('.filter-btn').forEach(function(b){b.classList.remove('active');});
     btn.classList.add('active');renderTasks();
 }
 
-// ===== Handover =====
 function renderHandoverList(){
     var container=document.getElementById('handoverList');
     if(!container)return;
@@ -656,7 +664,6 @@ function renderHandoverList(){
     container.innerHTML=html;
 }
 
-// ===== Stats =====
 function renderStats(){
     var tasks=allTasks,total=tasks.length;
     var pending=tasks.filter(function(t){return t.status==='pending';}).length;
@@ -693,7 +700,6 @@ function renderStats(){
     document.getElementById('shiftStats').innerHTML=shiftHtml;
 }
 
-// ===== Export =====
 function exportCSV(){
     if(allTasks.length===0){showToast('⚠️ 没有数据');return;}
     var csv='\uFEFF任务ID,班次,交班班长,接班班长,标题,详情,区域,优先级,类别,状态,创建时间\n';
@@ -725,7 +731,6 @@ function dlFile(content,filename,type){
     a.download=filename;document.body.appendChild(a);a.click();document.body.removeChild(a);
 }
 
-// ===== Init =====
 addTaskBlock();
 loadAll();
 </script>
