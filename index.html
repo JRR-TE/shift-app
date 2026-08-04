@@ -451,7 +451,6 @@ async function submitAllTasks(){
     var toLeader=document.getElementById('toLeader').value;
     if(!fromLeader){showToast('⚠️ 请选择交班班长');return;}
     if(!toLeader){showToast('⚠️ 请选择接班班长');return;}
-    if(fromLeader===toLeader){showToast('⚠️ 交班和接班班长不能相同');return;}
     var blocks=document.querySelectorAll('.task-block');
     if(blocks.length===0){showToast('⚠️ 请至少添加一个任务');return;}
     var newTasks=[],valid=true;
