@@ -93,4 +93,6 @@ export async function onRequest({request, env}){
         }
         return R({error:'Not Found'},404);
     }catch(err){
-        return R({error:
+        return R({error:err.message},500);
+    }
+}
